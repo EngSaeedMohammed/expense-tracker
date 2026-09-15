@@ -6,7 +6,8 @@ import { Expense } from './models/expense.model';
 
 @Component({
   selector: 'app-root',
-  imports: [ExpenseFormComponent, ExpenseListComponent, ChatbotComponent],
+  standalone: true,
+  imports: [],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
