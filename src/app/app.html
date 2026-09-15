@@ -1,0 +1,15 @@
+<main class="page">
+  <header>
+    <p class="eyebrow">Mini project</p>
+    <h1>Expense Tracker</h1>
+    <p>Add, edit, filter, and ask an AI Agent about your spending.</p>
+  </header>
+
+  <div class="layout">
+    <div class="stack">
+      <app-expense-form />
+      <app-expense-list (editExpense)="onEdit($event)" />
+    </div>
+    <app-chatbot />
+  </div>
+</main>

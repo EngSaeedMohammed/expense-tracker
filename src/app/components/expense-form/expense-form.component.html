@@ -1,0 +1,62 @@
+<section class="card">
+  <div class="card-header">
+    <h2>{{ isEditing ? 'Edit expense' : 'Add expense' }}</h2>
+    @if (isEditing) {
+      <span class="badge">Edit mode</span>
+    }
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label>
+      Amount
+      <input type="number" formControlName="amount" min="0.01" step="0.01" />
+    </label>
+    @if (amount.invalid && amount.touched) {
+      <p class="error">Amount is required and must be greater than 0.</p>
+    }
+
+    <label>
+      Category
+      <select formControlName="category">
+        <option value="" disabled>Select a category</option>
+        @for (item of categories; track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    @if (category.invalid && category.touched) {
+      <p class="error">Category is required.</p>
+    }
+
+    <label>
+      Date
+      <input type="date" formControlName="date" />
+    </label>
+    @if (date.invalid && date.touched) {
+      <p class="error">
+        @if (date.hasError('required')) {
+          Date is required.
+        } @else if (date.hasError('futureDate')) {
+          Date cannot be in the future.
+        }
+      </p>
+    }
+
+    <label>
+      Note
+      <textarea formControlName="note" maxlength="200" rows="3" placeholder="Optional note"></textarea>
+    </label>
+    @if (note.invalid && note.touched) {
+      <p class="error">Note cannot be longer than 200 characters.</p>
+    }
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">
+        {{ isEditing ? 'Update Expense' : 'Add Expense' }}
+      </button>
+      @if (isEditing) {
+        <button type="button" class="secondary" (click)="cancelEdit()">Cancel</button>
+      }
+    </div>
+  </form>
+</section>

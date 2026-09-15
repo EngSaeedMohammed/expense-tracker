@@ -1,0 +1,30 @@
+<section class="card chatbot">
+  <h2>Expense chatbot</h2>
+  <p class="hint">Ask about totals, categories, the largest expense, or a date range.</p>
+
+  <div class="history" aria-live="polite">
+    @for (message of messages(); track $index) {
+      <article class="bubble" [class.user]="message.role === 'user'" [class.assistant]="message.role === 'assistant'">
+        <span>{{ message.role === 'user' ? 'You' : 'AI Agent' }}</span>
+        <p>{{ message.text }}</p>
+      </article>
+    }
+    @if (loading()) {
+      <p class="status">The AI Agent is thinking...</p>
+    }
+    @if (error(); as errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+  </div>
+
+  <div class="composer">
+    <input
+      type="text"
+      [(ngModel)]="draft"
+      (keydown)="onKeydown($event)"
+      placeholder="How much did I spend on food this month?"
+      [disabled]="loading()"
+    />
+    <button type="button" (click)="send()" [disabled]="loading() || !draft.trim()">Send</button>
+  </div>
+</section>

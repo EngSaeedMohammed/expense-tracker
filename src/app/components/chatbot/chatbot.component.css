@@ -1,0 +1,87 @@
+.chatbot {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-height: 520px;
+}
+
+h2,
+.hint {
+  margin: 0;
+}
+
+.hint {
+  color: #52627a;
+  margin: 0.35rem 0 1rem;
+}
+
+.history {
+  display: grid;
+  gap: 0.75rem;
+  overflow: auto;
+  padding-right: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.bubble {
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+}
+
+.bubble span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bubble p {
+  margin: 0.35rem 0 0;
+  white-space: pre-wrap;
+}
+
+.user {
+  background: #dcebff;
+  justify-self: end;
+}
+
+.assistant {
+  background: #eef3fb;
+  justify-self: start;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+
+input {
+  border: 1px solid #d5dce6;
+  border-radius: 10px;
+  padding: 0.75rem;
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  background: #1f6feb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status,
+.error {
+  margin: 0;
+}
+
+.error {
+  color: #b42318;
+}

@@ -1,0 +1,52 @@
+{
+  "name": "Expense Tracker AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "expense-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "webhookId": "expense-chat"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst message = String(body.message || '').toLowerCase();\nconst expenses = Array.isArray(body.expenses) ? body.expenses : [];\nconst money = (value) => Number(value || 0).toFixed(2);\nconst sum = (list) => list.reduce((total, item) => total + Number(item.amount || 0), 0);\n\nif (!expenses.length) {\n  return [{ json: { reply: 'There are no expenses available, so I cannot calculate spending.' } }];\n}\n\nconst categories = ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Other'];\nconst matchedCategory = categories.find((category) => message.includes(category.toLowerCase()));\n\nlet reply = '';\nif (message.includes('largest') || message.includes('biggest')) {\n  const largest = [...expenses].sort((a, b) => Number(b.amount) - Number(a.amount))[0];\n  reply = `The largest expense is ${money(largest.amount)} on ${largest.date} (${largest.category}).`;\n} else if (matchedCategory) {\n  const filtered = expenses.filter((item) => item.category === matchedCategory);\n  reply = filtered.length\n    ? `${matchedCategory} spending is ${money(sum(filtered))} across ${filtered.length} expense(s).`\n    : `There are no ${matchedCategory} expenses in the current data.`;\n} else if (message.includes('by category') || message.includes('breakdown')) {\n  reply = 'Spending by category:\\n' + categories\n    .map((category) => {\n      const filtered = expenses.filter((item) => item.category === category);\n      return filtered.length ? `${category}: ${money(sum(filtered))}` : null;\n    })\n    .filter(Boolean)\n    .join('\\n');\n} else if (message.includes('recent') || message.includes('latest')) {\n  const recent = [...expenses].sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 5)\n    .map((item) => `${item.date}: ${money(item.amount)} (${item.category})`);\n  reply = `Your most recent expenses:\\n${recent.join('\\n')}`;\n} else if (message.includes('total') || message.includes('how much') || message.includes('spend')) {\n  reply = `Your total spending is ${money(sum(expenses))} across ${expenses.length} expense(s).`;\n} else {\n  reply = 'I can answer totals, category spending, the largest expense, and recent spending from the expenses sent with the request. I will not invent values.';\n}\n\nreturn [{ json: { reply } }];"
+      },
+      "id": "agent-code",
+      "name": "AI Agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { reply: $json.reply } }}"
+      },
+      "id": "respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [780, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]]
+    },
+    "AI Agent": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "1",
+  "meta": { "instanceId": "expense-tracker-student" }
+}

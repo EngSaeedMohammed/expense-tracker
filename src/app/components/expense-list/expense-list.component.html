@@ -1,0 +1,90 @@
+<section class="card">
+  <div class="card-header">
+    <h2>Expenses</h2>
+    <p class="total">Visible total: {{ visibleTotal() | currency }}</p>
+  </div>
+
+  @if (expenseService.loading()) {
+    <p class="status">Loading expenses...</p>
+  }
+
+  @if (expenseService.error(); as error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  <div class="filters">
+    <label>
+      Category
+      <select [value]="category()" (change)="onCategoryChange($any($event.target).value)">
+        <option value="All">All</option>
+        @for (item of categories; track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Search notes
+      <input
+        type="search"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+        placeholder="Search by note"
+      />
+    </label>
+
+    <label>
+      Sort by
+      <select [value]="sortBy()" (change)="onSortByChange($any($event.target).value)">
+        <option value="date">Date</option>
+        <option value="amount">Amount</option>
+      </select>
+    </label>
+
+    <label>
+      Direction
+      <select [value]="sortDir()" (change)="onSortDirChange($any($event.target).value)">
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
+      </select>
+    </label>
+
+    <label>
+      Highlight over
+      <input
+        type="number"
+        min="0"
+        [value]="threshold()"
+        (input)="onThresholdChange($any($event.target).value)"
+      />
+    </label>
+  </div>
+
+  <div class="subtotals">
+    @for (item of categoryTotals(); track item.category) {
+      <span>{{ item.category }}: {{ item.total | currency }}</span>
+    }
+  </div>
+
+  @if (filteredExpenses().length === 0) {
+    <p class="empty">No expenses match the current filters.</p>
+  } @else {
+    <ul class="list">
+      @for (expense of filteredExpenses(); track expense.id) {
+        <li [appHighlightOverBudget]="expense.amount" [threshold]="threshold()">
+          <div>
+            <strong>{{ expense.category | categoryIcon }}</strong>
+            <p>{{ expense.date }} · {{ expense.amount | currency }}</p>
+            @if (expense.note) {
+              <p class="note">{{ expense.note }}</p>
+            }
+          </div>
+          <div class="row-actions">
+            <button type="button" (click)="editExpense.emit(expense)">Edit</button>
+            <button type="button" class="danger" (click)="deleteExpense(expense)">Delete</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
